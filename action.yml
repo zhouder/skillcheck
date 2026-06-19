@@ -1,0 +1,34 @@
+name: Skillcheck
+description: Validate, secure, and score Agent Skills in CI.
+author: Skillcheck contributors
+branding:
+  icon: shield
+  color: purple
+inputs:
+  path:
+    description: Skill directory or parent directory to analyze.
+    required: false
+    default: .
+  config:
+    description: Optional path to a Skillcheck configuration file.
+    required: false
+  fail-on:
+    description: Minimum severity that fails the action (error, warning, or never).
+    required: false
+    default: error
+  sarif-file:
+    description: Path for the generated SARIF report. Empty disables SARIF output.
+    required: false
+    default: skillcheck.sarif
+outputs:
+  score:
+    description: Lowest score across analyzed skills.
+  skills:
+    description: Number of analyzed skills.
+  errors:
+    description: Total error findings.
+  warnings:
+    description: Total warning findings.
+runs:
+  using: node20
+  main: dist/action/index.js

@@ -1,0 +1,17 @@
+name: Skillcheck
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  skillcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: zhouder/skillcheck@v0
+        with:
+          path: skills
+          fail-on: warning

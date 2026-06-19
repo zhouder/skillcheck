@@ -1,0 +1,1 @@
+{"version":3,"file":"shared.d.ts","sourceRoot":"","sources":["../../src/reporters/shared.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,cAAc,EAAE,OAAO,EAAE,MAAM,kBAAkB,CAAC;AAEhE,wBAAgB,WAAW,CAAC,MAAM,EAAE,cAAc,GAAG,OAAO,EAAE,CAE7D;AAED,wBAAgB,UAAU,CAAC,KAAK,EAAE,MAAM,GAAG,aAAa,GAAG,OAAO,GAAG,QAAQ,GAAG,QAAQ,GAAG,KAAK,CAM/F;AAED,wBAAgB,eAAe,CAAC,OAAO,EAAE,OAAO,GAAG,MAAM,CAIxD"}

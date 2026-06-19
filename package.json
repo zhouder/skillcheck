@@ -1,0 +1,92 @@
+{
+  "name": "skillcheck",
+  "version": "0.1.0",
+  "description": "The quality gate for Agent Skills: spec validation, security checks, context analysis, and publish-ready reports.",
+  "type": "module",
+  "license": "MIT",
+  "author": "zhouder and Skillcheck contributors",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhouder/skillcheck.git"
+  },
+  "homepage": "https://github.com/zhouder/skillcheck#readme",
+  "bugs": {
+    "url": "https://github.com/zhouder/skillcheck/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "agent-skills",
+    "ai-agents",
+    "claude-code",
+    "codex",
+    "cursor",
+    "linter",
+    "security",
+    "static-analysis"
+  ],
+  "engines": {
+    "node": ">=20.12"
+  },
+  "bin": {
+    "skillcheck": "dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./config-schema": "./schema/config.schema.json",
+    "./report-schema": "./schema/report.schema.json"
+  },
+  "files": [
+    "dist/",
+    "schema/",
+    "docs/",
+    "action.yml",
+    "README.md",
+    "CHANGELOG.md",
+    "SECURITY.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "build:action": "ncc build src/action/index.ts -o dist/action --minify",
+    "build:all": "npm run clean && npm run build && npm run build:action",
+    "check": "npm run format:check && npm run typecheck && npm run test:run",
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "dev": "tsx src/cli.ts",
+    "format": "biome check --write .",
+    "format:check": "biome check .",
+    "package:check": "npm pack --dry-run",
+    "prepack": "npm run build:all",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:run": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "commander": "^14.0.0",
+    "mdast-util-from-markdown": "^2.0.2",
+    "minimatch": "^10.0.3",
+    "picocolors": "^1.1.1",
+    "unist-util-visit": "^5.0.0",
+    "yaml": "^2.8.1",
+    "zod": "^4.1.5"
+  },
+  "devDependencies": {
+    "@actions/core": "^3.0.1",
+    "@biomejs/biome": "^2.2.2",
+    "@types/node": "^24.3.0",
+    "@vercel/ncc": "^0.44.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "ajv": "^8.17.1",
+    "tsx": "^4.20.5",
+    "typescript": "^6.0.3",
+    "vitest": "^3.2.4"
+  },
+  "overrides": {
+    "esbuild": "^0.28.1"
+  }
+}

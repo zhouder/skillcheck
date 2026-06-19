@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unpkg.com/skillcheck/schema/report.schema.json",
+  "title": "Skillcheck analysis report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "tool", "root", "settings", "results", "globalFindings", "summary"],
+  "properties": {
+    "schemaVersion": { "const": "1" },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "skillcheck" },
+        "version": { "type": "string" }
+      }
+    },
+    "root": { "type": "string" },
+    "configFile": { "type": ["string", "null"] },
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["failOn"],
+      "properties": {
+        "failOn": { "enum": ["error", "warning", "never"] }
+      }
+    },
+    "results": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/skillResult" }
+    },
+    "globalFindings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/finding" }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["skills", "errors", "warnings", "infos"],
+      "properties": {
+        "skills": { "type": "integer", "minimum": 0 },
+        "errors": { "type": "integer", "minimum": 0 },
+        "warnings": { "type": "integer", "minimum": 0 },
+        "infos": { "type": "integer", "minimum": 0 },
+        "lowestScore": { "type": ["integer", "null"], "minimum": 0, "maximum": 100 }
+      }
+    }
+  },
+  "$defs": {
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ruleId", "title", "message", "severity", "category", "location"],
+      "properties": {
+        "ruleId": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "severity": { "enum": ["error", "warning", "info"] },
+        "category": {
+          "enum": ["spec", "security", "quality", "efficiency", "portability", "internal"]
+        },
+        "location": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path"],
+          "properties": {
+            "path": { "type": "string" },
+            "line": { "type": "integer", "minimum": 1 },
+            "column": { "type": "integer", "minimum": 1 },
+            "endLine": { "type": "integer", "minimum": 1 },
+            "endColumn": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "evidence": { "type": "string" },
+        "help": { "type": "string" }
+      }
+    },
+    "skillResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["directory", "skillFile", "score", "grade", "metrics", "findings"],
+      "properties": {
+        "directory": { "type": "string" },
+        "skillFile": { "type": "string" },
+        "name": { "type": ["string", "null"] },
+        "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "grade": { "enum": ["A", "B", "C", "D", "F"] },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "fileCount",
+            "totalBytes",
+            "scriptCount",
+            "referenceCount",
+            "externalLinkCount",
+            "skillLines",
+            "estimatedTokens"
+          ],
+          "properties": {
+            "fileCount": { "type": "integer", "minimum": 0 },
+            "totalBytes": { "type": "integer", "minimum": 0 },
+            "scriptCount": { "type": "integer", "minimum": 0 },
+            "referenceCount": { "type": "integer", "minimum": 0 },
+            "externalLinkCount": { "type": "integer", "minimum": 0 },
+            "skillLines": { "type": "integer", "minimum": 0 },
+            "estimatedTokens": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "findings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/finding" }
+        }
+      }
+    }
+  }
+}
