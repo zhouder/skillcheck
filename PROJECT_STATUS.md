@@ -113,6 +113,7 @@ pure presentation layers. The CLI and Action use the same public core API.
 - [x] Reporters and CLI
 - [x] GitHub Action and badge
 - [x] Documentation and examples
+- [x] English and Simplified Chinese README parity
 - [x] Verification loop 1: implementation correctness
 - [x] Verification loop 2: security and failure behavior
 - [x] Verification loop 3: installation and user experience
@@ -244,6 +245,20 @@ Result: npm publication is complete.
   duplicate publish step was skipped.
 
 Result: v0.1.0 is fully released on npm and GitHub.
+
+### Loop 8 - README localization
+
+- Added `README.zh-CN.md` with the same ten user-facing sections, commands,
+  configuration examples, scoring details, and security boundaries as the
+  canonical English README.
+- Added reciprocal English and Simplified Chinese language links while keeping
+  `README.md` as the default GitHub and npm landing page.
+- Verified both README files have matching code blocks, valid local links, no
+  trailing whitespace, and valid UTF-8 encoding.
+- Ran all 47 tests, type checking, the complete CLI and Action build, and npm
+  package dry-run. The Chinese README is included in the 109-file tarball.
+
+Result: bilingual documentation is synchronized and release-ready.
 
 ## Handoff Protocol For Other Coding Agents
 
