@@ -1,8 +1,8 @@
 # Skillcheck Project Status
 
 Last updated: 2026-06-19
-Current phase: v0.1.1 release candidate
-Release target: v0.1.1 precision and scoring update
+Current phase: Public v0.1.1 released
+Release target: v0.1.1 complete
 
 ## Mission
 
@@ -120,17 +120,20 @@ pure presentation layers. The CLI and Action use the same public core API.
 - [x] Release candidate review
 - [x] Public npm publication and clean-install verification
 - [x] GitHub v0.1.0 Release and moving v0 Action tag
+- [x] npm and GitHub v0.1.1 precision/scoring release
 
 ## Current Risks
 
 1. The Agent Skills specification is evolving. Rules identify their behavior
    through stable IDs, but future spec changes will require compatibility work.
-2. Static security checks can create false positives. v0.1.0 favors
+2. Static security checks can create false positives. v0.1.1 favors
    high-confidence findings, precise evidence, and per-rule overrides.
 3. A numeric score can imply false precision. Errors, severity counts, and
    evidence remain primary; the score is a compact comparison aid.
 4. Early adoption is the main product risk. Distribution, examples, issue
    response, and compatibility updates now matter more than feature breadth.
+5. npm Trusted Publishing is not configured for the release workflow. Tags run
+   the full gate but require a manual Security Key publish until this is set up.
 
 ## Decision Log
 
@@ -300,6 +303,20 @@ precision defects found by the validation loop are fixed on `main`.
 Result: score saturation is removed, repeated evidence is discounted without
 hiding distinct failures, and the real-world distribution is explainable.
 
+### Loop 11 - v0.1.1 release
+
+- Updated package, CLI, tests, docs, and changelog to v0.1.1 and passed the
+  complete local and GitHub release gates.
+- The tag workflow passed install, 52 tests, coverage, build, and packing, then
+  failed only at npm authorization because no Trusted Publisher is configured.
+- Published `@zhouder/skillcheck@0.1.1` manually with Security Key confirmation;
+  verified npm `latest`, a clean public install, CLI version, example score, and
+  zero audit findings.
+- Published the non-draft GitHub v0.1.1 Release and moved the `v0` Action tag to
+  commit `3d22248`.
+
+Result: v0.1.1 is fully released and publicly installable from npm and GitHub.
+
 ## Handoff Protocol For Other Coding Agents
 
 1. Read this file and `AGENTS.md` before changing code.
@@ -314,6 +331,5 @@ hiding distinct failures, and the real-world distribution is explainable.
 
 ## Next Step
 
-Run the complete release gate, publish the precision fixes as v0.1.1, then begin
-launch distribution, collect early-user feedback, and triage Dependabot pull
-requests.
+Begin launch distribution, collect early-user feedback, configure npm Trusted
+Publishing, and use observed adoption and issue data to define v0.2.0.
