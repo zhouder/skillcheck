@@ -87,7 +87,8 @@ const credentialAccess = defineRule(
       files,
       patterns: [
         /\b(?:cat|type|Get-Content|readFile\w*|open)\b[^\n]{0,200}(?:\.env\b|\.ssh[/\\]|\.aws[/\\]credentials|\.config[/\\]gcloud)/giu,
-        /\b(?:print|echo|Write-Output|console\.log)\b[^\n]{0,200}(?:TOKEN|PASSWORD|SECRET|API_KEY|PRIVATE_KEY)\b/giu
+        /\b(?:print|echo|Write-Output|console\.log)\b[^\n]{0,200}(?:\$(?:env:)?(?:\w*_)?(?:TOKEN|PASSWORD|SECRET|API_KEY|PRIVATE_KEY)\b|(?:\$|#)\{[^}\n]*(?:token|password|secret|api_?key|private_?key)[^}\n]*\}|f["'][^\n]{0,160}\{[^}\n]*(?:token|password|secret|api_?key|private_?key)[^}\n]*\}|process\.env\.(?:\w*_)?(?:TOKEN|PASSWORD|SECRET|API_KEY|PRIVATE_KEY)\b|os\.(?:environ|getenv)\b[^\n]{0,100}(?:TOKEN|PASSWORD|SECRET|API_KEY|PRIVATE_KEY)\b)/giu,
+        /\b(?:print|console\.log)\s*\(\s*(?:\w*_)?(?:token|password|secret|api_?key|private_?key)\b/giu
       ],
       create: ({ file, line, evidence }) =>
         createFinding({
@@ -119,6 +120,7 @@ const promptOverride = defineRule(
     for (const pattern of patterns) {
       for (const match of skill.body.matchAll(pattern)) {
         if (match.index === undefined) continue;
+        if (isDefensivePromptOverrideExample(skill.body, match.index, match[0].length)) continue;
         findings.push(
           createFinding({
             message:
@@ -136,6 +138,22 @@ const promptOverride = defineRule(
     return findings;
   }
 );
+
+function isDefensivePromptOverrideExample(source: string, index: number, length: number): boolean {
+  const before = source.slice(Math.max(0, index - 240), index);
+  const context = source.slice(
+    Math.max(0, index - 360),
+    Math.min(source.length, index + length + 360)
+  );
+  const introducesExample = /(?:e\.g\.|for example|such as|looks? like)[\s\S]{0,220}$/iu.test(
+    before
+  );
+  const rejectsInstruction =
+    /(?:untrusted data|treat[\s\S]{0,120}as data|not an action to execute|(?:do not|don't|never)[^\n]{0,40}(?:follow|obey|execute|interpret)[^\n]{0,80}(?:page|browser|external|untrusted|content))/iu.test(
+      context
+    );
+  return introducesExample && rejectsInstruction;
+}
 
 const sensitiveFile = defineRule(
   {

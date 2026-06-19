@@ -260,6 +260,25 @@ Result: v0.1.0 is fully released on npm and GitHub.
 
 Result: bilingual documentation is synchronized and release-ready.
 
+### Loop 9 - Real-world validation
+
+- Sparse-cloned six public Agent Skills at pinned commits from Anthropic,
+  Vercel, Addy Osmani, Superpowers, GitHub Awesome Copilot, and Last30Days.
+- Scanned 207 files and approximately 48,285 estimated context tokens. Three
+  consecutive reports per case were identical, input SHA-256 hashes did not
+  change, and median end-to-end scan times ranged from 1.56 to 1.75 seconds.
+- Reviewed every nontrivial finding against source context and the pinned
+  official Agent Skills specification/reference validator.
+- Repaired two false-positive classes: defensive prompt-injection examples and
+  messages that name credential variables without outputting their values.
+- Added focused positive/negative regression tests and published the complete
+  methodology and results in `docs/REAL_WORLD_VALIDATION.md`.
+- Final gate: 49 tests passing; 90.09% statements/lines, 84.77% branches,
+  95.89% functions; CLI and bundled Action builds and npm dry-run passed.
+
+Result: real-world behavior is documented, deterministic, non-mutating, and two
+precision defects found by the validation loop are fixed on `main`.
+
 ## Handoff Protocol For Other Coding Agents
 
 1. Read this file and `AGENTS.md` before changing code.
@@ -274,6 +293,6 @@ Result: bilingual documentation is synchronized and release-ready.
 
 ## Next Step
 
-Begin launch distribution, collect early-user feedback, triage Dependabot pull
-requests, and use observed false positives or compatibility gaps to define
-v0.1.1 or v0.2.0.
+Run the complete release gate, publish the precision fixes as v0.1.1, then begin
+launch distribution, collect early-user feedback, and triage Dependabot pull
+requests.

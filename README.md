@@ -23,6 +23,10 @@ examples/csv-review/SKILL.md | 2 files | ~88 context tokens
 1 skill | 0 errors | 0 warnings | 0 info
 ```
 
+See the [real-world validation snapshot](docs/REAL_WORLD_VALIDATION.md) for
+reproducible results against public skills from Anthropic, Vercel, GitHub, and
+other widely used repositories.
+
 ## Why Skillcheck
 
 - **Spec-compatible:** covers the official metadata and naming constraints.

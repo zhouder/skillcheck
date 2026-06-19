@@ -5,6 +5,15 @@ Versioning.
 
 ## [Unreleased]
 
+### Added
+
+- Reproducible real-world validation across six public Agent Skill repositories
+
+### Fixed
+
+- Avoid prompt-override findings for explicitly defensive injection examples
+- Avoid credential-access findings for messages that only name credential variables
+
 ## [0.1.0] - 2026-06-19
 
 ### Added

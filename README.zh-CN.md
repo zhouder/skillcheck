@@ -20,6 +20,8 @@ examples/csv-review/SKILL.md | 2 files | ~88 context tokens
 1 skill | 0 errors | 0 warnings | 0 info
 ```
 
+查看[真实项目验证报告](docs/REAL_WORLD_VALIDATION.md)，了解 Skillcheck 对 Anthropic、Vercel、GitHub 及其他广泛使用的公开技能进行测试的可复现结果。
+
 ## 为什么选择 Skillcheck
 
 - **兼容规范：** 覆盖官方元数据和命名约束。
