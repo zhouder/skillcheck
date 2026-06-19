@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://unpkg.com/skillcheck/schema/config.schema.json",
+  "$id": "https://unpkg.com/@zhouder/skillcheck/schema/config.schema.json",
   "title": "Skillcheck configuration",
   "type": "object",
   "additionalProperties": false,

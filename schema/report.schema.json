@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://unpkg.com/skillcheck/schema/report.schema.json",
+  "$id": "https://unpkg.com/@zhouder/skillcheck/schema/report.schema.json",
   "title": "Skillcheck analysis report v1",
   "type": "object",
   "additionalProperties": false,
