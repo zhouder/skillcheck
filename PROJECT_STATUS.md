@@ -1,8 +1,8 @@
 # Skillcheck Project Status
 
 Last updated: 2026-06-19
-Current phase: Public release
-Release target: v0.1.0 (npm published; GitHub Release in progress)
+Current phase: Public v0.1.0 released
+Release target: v0.1.0 complete
 
 ## Mission
 
@@ -118,6 +118,7 @@ pure presentation layers. The CLI and Action use the same public core API.
 - [x] Verification loop 3: installation and user experience
 - [x] Release candidate review
 - [x] Public npm publication and clean-install verification
+- [x] GitHub v0.1.0 Release and moving v0 Action tag
 
 ## Current Risks
 
@@ -228,7 +229,21 @@ Result: GitHub source publication is complete.
   registry install. The installed CLI reported v0.1.0, scored the example
   100/100, and installed with zero audit findings.
 
-Result: npm publication is complete; GitHub release tagging is the active step.
+Result: npm publication is complete.
+
+### Loop 7 - GitHub release
+
+- Added npm, CI, and license badges to the README.
+- Restricted the npm release workflow to three-part version tags so moving the
+  `v0` GitHub Action alias does not trigger duplicate release jobs.
+- Created and pushed immutable `v0.1.0` and moving `v0` tags, then published the
+  non-draft GitHub Release at
+  https://github.com/zhouder/skillcheck/releases/tag/v0.1.0.
+- Verified the tag workflow completed successfully: install, checks, and
+  coverage passed, and the already-published npm version was detected so the
+  duplicate publish step was skipped.
+
+Result: v0.1.0 is fully released on npm and GitHub.
 
 ## Handoff Protocol For Other Coding Agents
 
@@ -244,5 +259,6 @@ Result: npm publication is complete; GitHub release tagging is the active step.
 
 ## Next Step
 
-Tag `v0.1.0`, update the moving `v0` GitHub Action tag, create the GitHub Release,
-and begin launch distribution and early-user feedback collection.
+Begin launch distribution, collect early-user feedback, triage Dependabot pull
+requests, and use observed false positives or compatibility gaps to define
+v0.1.1 or v0.2.0.
