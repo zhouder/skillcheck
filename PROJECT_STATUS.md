@@ -209,6 +209,16 @@ supported runtime matrix.
 Result: v0.1.0 is a local release candidate. GitHub and npm identities are now
 configured for `zhouder`; publication is the active step.
 
+### Loop 5 - GitHub publication
+
+- Added repository metadata for `zhouder/skillcheck` and replaced every owner
+  placeholder in documentation and workflow examples.
+- Created root commit `0b7e68d` and pushed `main` to the public GitHub repository.
+- Made the tag release workflow idempotent so a manually bootstrapped npm
+  version is detected and skipped instead of failing as a duplicate publish.
+
+Result: GitHub source publication is complete; npm and release tagging remain.
+
 ## Handoff Protocol For Other Coding Agents
 
 1. Read this file and `AGENTS.md` before changing code.
