@@ -275,6 +275,9 @@ Result: bilingual documentation is synchronized and release-ready.
   methodology and results in `docs/REAL_WORLD_VALIDATION.md`.
 - Final gate: 49 tests passing; 90.09% statements/lines, 84.77% branches,
   95.89% functions; CLI and bundled Action builds and npm dry-run passed.
+- Upgraded `actions/checkout` and `actions/setup-node` after the live CI run
+  exposed their previous Node 20 runtime deprecation warnings; synchronized all
+  user-facing workflow examples.
 
 Result: real-world behavior is documented, deterministic, non-mutating, and two
 precision defects found by the validation loop are fixed on `main`.

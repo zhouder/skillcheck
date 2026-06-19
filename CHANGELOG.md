@@ -9,6 +9,10 @@ Versioning.
 
 - Reproducible real-world validation across six public Agent Skill repositories
 
+### Changed
+
+- Upgrade GitHub workflow examples to current Node 24-based official actions
+
 ### Fixed
 
 - Avoid prompt-override findings for explicitly defensive injection examples
