@@ -1,8 +1,8 @@
 # Skillcheck Project Status
 
 Last updated: 2026-06-19
-Current phase: Release candidate
-Release target: v0.1.0
+Current phase: Public release
+Release target: v0.1.0 (npm published; GitHub Release in progress)
 
 ## Mission
 
@@ -20,8 +20,7 @@ The primary user promise is:
 
 - Product name and CLI command: `skillcheck`
 - Repository directory: `skillcheck`
-- Intended npm package: `skillcheck` (available when checked on 2026-06-19;
-  availability is not reserved until publication)
+- Published npm package: `@zhouder/skillcheck`
 - Runtime: Node.js 20 or newer
 - Implementation: TypeScript, ESM
 - Initial interfaces: local CLI and GitHub Action
@@ -118,6 +117,7 @@ pure presentation layers. The CLI and Action use the same public core API.
 - [x] Verification loop 2: security and failure behavior
 - [x] Verification loop 3: installation and user experience
 - [x] Release candidate review
+- [x] Public npm publication and clean-install verification
 
 ## Current Risks
 
@@ -127,9 +127,8 @@ pure presentation layers. The CLI and Action use the same public core API.
    high-confidence findings, precise evidence, and per-rule overrides.
 3. A numeric score can imply false precision. Errors, severity counts, and
    evidence remain primary; the score is a compact comparison aid.
-4. The unscoped npm name cannot be guaranteed until it is published.
-5. The unscoped npm package remains unreserved until the first successful
-   publication, even though availability was rechecked immediately before release.
+4. Early adoption is the main product risk. Distribution, examples, issue
+   response, and compatibility updates now matter more than feature breadth.
 
 ## Decision Log
 
@@ -198,7 +197,7 @@ supported runtime matrix.
 
 - Built and ran the bundled GitHub Action; verified annotations data, outputs,
   job summary, and SARIF file generation against the clean example.
-- Packed and installed `skillcheck-0.1.0.tgz` in an isolated system temp
+- Packed and installed `zhouder-skillcheck-0.1.0.tgz` in an isolated system temp
   directory; the installed CLI reported v0.1.0 and scored the example 100/100.
 - Final dry-run package is approximately 308 KB compressed and 1.1 MB unpacked.
 - Added release CI, Dependabot, security policy, contribution guide, architecture
@@ -206,8 +205,7 @@ supported runtime matrix.
 - Initialized a local Git repository on branch `main` and ran whitespace/risk
   marker review with no release-blocking findings.
 
-Result: v0.1.0 is a local release candidate. GitHub and npm identities are now
-configured for `zhouder`; publication is the active step.
+Result: v0.1.0 passed the local release-candidate gate.
 
 ### Loop 5 - GitHub publication
 
@@ -217,7 +215,20 @@ configured for `zhouder`; publication is the active step.
 - Made the tag release workflow idempotent so a manually bootstrapped npm
   version is detected and skipped instead of failing as a duplicate publish.
 
-Result: GitHub source publication is complete; npm and release tagging remain.
+Result: GitHub source publication is complete.
+
+### Loop 6 - npm publication
+
+- Enabled npm write protection with a Security Key and completed browser-backed
+  publication authentication.
+- npm rejected the unscoped name because it was too similar to `skill-check`;
+  migrated package metadata, documentation, and schema IDs to
+  `@zhouder/skillcheck`.
+- Published `@zhouder/skillcheck@0.1.0` publicly and verified it through a clean
+  registry install. The installed CLI reported v0.1.0, scored the example
+  100/100, and installed with zero audit findings.
+
+Result: npm publication is complete; GitHub release tagging is the active step.
 
 ## Handoff Protocol For Other Coding Agents
 
@@ -233,5 +244,5 @@ Result: GitHub source publication is complete; npm and release tagging remain.
 
 ## Next Step
 
-Commit and push `main`, publish the npm package, tag `v0.1.0`, create the GitHub
-release, and verify installation from the public registry.
+Tag `v0.1.0`, update the moving `v0` GitHub Action tag, create the GitHub Release,
+and begin launch distribution and early-user feedback collection.
