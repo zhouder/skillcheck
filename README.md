@@ -154,10 +154,12 @@ Shields endpoint badge at its raw URL.
 
 ## Scoring
 
-Every skill starts at 100. Findings subtract weighted penalties based on
-severity and category. Specification and security errors have greater weight
-than quality or portability notes. The score is a compact comparison aid, not
-a safety guarantee; evidence and individual findings remain authoritative.
+Every skill starts at 100. Findings apply weighted penalties based on severity
+and category. Repeated findings from the same rule have diminishing impact, and
+the aggregate penalty follows a smooth decay instead of abruptly flooring at
+zero. Specification and security errors have greater weight than quality or
+portability notes. The score is a compact comparison aid, not a safety
+guarantee; evidence and individual findings remain authoritative.
 
 | Grade | Score |
 | --- | ---: |

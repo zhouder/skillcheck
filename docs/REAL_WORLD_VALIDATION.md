@@ -7,8 +7,8 @@ widely used repositories. It is a compatibility and false-positive review, not
 an endorsement of the sampled projects.
 
 The results were produced from the current `main` branch after the unreleased
-false-positive fixes described below. npm v0.1.0 does not yet include those two
-refinements.
+precision fixes and scoring calibration described below. npm v0.1.0 does not
+yet include these refinements.
 
 ## Method
 
@@ -31,7 +31,7 @@ tokens. Every scan was deterministic and left every input file unchanged.
 | [Addy Osmani browser testing](https://github.com/addyosmani/agent-skills/tree/13e43f2310224d5770a7fb0a8c24c02b73da69e9/skills/browser-testing-with-devtools) | 99 A | 0/0/1 | 1 | 3,514 | 1.68 s |
 | [Superpowers systematic debugging](https://github.com/obra/superpowers/tree/896224c4b1879920ab573417e68fd51d2ccc9072/skills/systematic-debugging) | 99 A | 0/0/1 | 11 | 2,436 | 1.75 s |
 | [GitHub multi-agent orchestration](https://github.com/github/awesome-copilot/tree/251f416b6d3aa12837b10536e6f9bdd67f482ff7/plugins/ai-team-orchestration/skills/ai-team-orchestration) | 99 A | 0/0/1 | 5 | 1,418 | 1.56 s |
-| [Last30Days](https://github.com/mvanhorn/last30days-skill/tree/3fa91fce9009731ed68e2e8a14ce9683253720e8/skills/last30days) | 0 F | 7/12/2 | 102 | 37,328 | 1.69 s |
+| [Last30Days](https://github.com/mvanhorn/last30days-skill/tree/3fa91fce9009731ed68e2e8a14ce9683253720e8/skills/last30days) | 30 F | 7/12/2 | 102 | 37,328 | 1.69 s |
 
 `E/W/I` means errors, warnings, and informational findings. Timings include Node.js
 startup and should be treated as an environment-specific snapshot, not a formal
@@ -63,6 +63,30 @@ accept those extensions. Other findings include:
 See the pinned
 [specification source](https://github.com/agentskills/agentskills/blob/5d4c1fda3f786fff826c7f56b6cb3341e7f3a911/docs/specification.mdx)
 for the rules used in this review.
+
+## Score Calibration
+
+The first scoring model subtracted every weighted finding linearly and floored
+the result at zero. Last30Days reached zero from its seven specification errors
+alone, so its other security, efficiency, quality, and portability findings no
+longer affected the visible score.
+
+The revised model keeps the existing severity and category weights but gives
+repeated findings from the same rule harmonic diminishing impact. It then maps
+the aggregate penalty through a smooth exponential decay. Calibration checks
+show:
+
+- one specification error remains 79;
+- one security warning remains 93;
+- one informational quality finding remains 99;
+- six repeated specification errors score 57, while six distinct specification
+  rule failures score 25;
+- the unchanged Last30Days findings now score 30 instead of saturating at zero.
+
+The other five real-world scores remain 100, 79, 99, 99, and 99 because those
+skills have zero findings, one error, or one informational finding. Their high
+scores reflect the selected projects' clean results rather than score
+saturation.
 
 ## Repairs From This Run
 

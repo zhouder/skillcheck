@@ -1,8 +1,8 @@
 # Skillcheck Project Status
 
 Last updated: 2026-06-19
-Current phase: Public v0.1.0 released
-Release target: v0.1.0 complete
+Current phase: v0.1.1 release candidate
+Release target: v0.1.1 precision and scoring update
 
 ## Mission
 
@@ -281,6 +281,24 @@ Result: bilingual documentation is synchronized and release-ready.
 
 Result: real-world behavior is documented, deterministic, non-mutating, and two
 precision defects found by the validation loop are fixed on `main`.
+
+### Loop 10 - Score calibration
+
+- Audited the original linear subtraction model after the six-case result set
+  clustered at 100/99 and zero. Seven specification errors alone exceeded 100
+  penalty points, hiding all remaining Last30Days findings behind the floor.
+- Replaced linear subtraction with per-rule harmonic diminishing penalties and
+  smooth exponential decay. Single-finding calibration remains stable: spec
+  error 79, security warning 93, quality info 99.
+- Added direct scoring contracts for empty, single, repeated, distinct, and
+  real-world multi-category finding profiles.
+- Re-ran all six pinned real cases. Five scores remained unchanged; Last30Days
+  moved from 0 to 30 while retaining all 7/12/2 findings.
+- Final gate: 52 tests passing; 90.18% statements/lines, 85.08% branches,
+  95.94% functions; scoring module coverage is 100%.
+
+Result: score saturation is removed, repeated evidence is discounted without
+hiding distinct failures, and the real-world distribution is explainable.
 
 ## Handoff Protocol For Other Coding Agents
 

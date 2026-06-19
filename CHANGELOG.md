@@ -12,6 +12,7 @@ Versioning.
 ### Changed
 
 - Upgrade GitHub workflow examples to current Node 24-based official actions
+- Calibrate scoring with diminishing repeated-rule penalties and smooth decay
 
 ### Fixed
 

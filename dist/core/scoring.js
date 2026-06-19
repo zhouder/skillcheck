@@ -11,9 +11,32 @@ const categoryMultiplier = {
     portability: 0.8,
     internal: 1.5
 };
+const scoreDecay = 90;
 export function scoreFindings(findings) {
-    const penalty = findings.reduce((sum, finding) => sum + basePenalty[finding.severity] * categoryMultiplier[finding.category], 0);
-    return Math.max(0, Math.round(100 - penalty));
+    const groups = new Map();
+    for (const finding of findings) {
+        const key = `${finding.ruleId}\u0000${finding.severity}\u0000${finding.category}`;
+        const group = groups.get(key);
+        if (group) {
+            group.count += 1;
+        }
+        else {
+            groups.set(key, { finding, count: 1 });
+        }
+    }
+    let penalty = 0;
+    for (const { finding, count } of groups.values()) {
+        const unit = basePenalty[finding.severity] * categoryMultiplier[finding.category];
+        penalty += unit * harmonicNumber(count);
+    }
+    return Math.max(0, Math.min(100, Math.round(100 * Math.exp(-penalty / scoreDecay))));
+}
+function harmonicNumber(count) {
+    let value = 0;
+    for (let occurrence = 1; occurrence <= count; occurrence += 1) {
+        value += 1 / occurrence;
+    }
+    return value;
 }
 export function scoreGrade(score) {
     if (score >= 90)

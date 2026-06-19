@@ -57,6 +57,20 @@ reference validator accepts normalized Unicode alphanumeric names while some
 client documentation still says ASCII-only; therefore Unicode is spec-valid
 and receives only a portability note.
 
+## Scoring Model
+
+Each finding starts with a severity penalty and a category multiplier. Findings
+with the same rule ID, severity, and category are grouped so repeated evidence
+uses the harmonic multiplier `H(n) = 1 + 1/2 + ... + 1/n`. This preserves the
+importance of repeated evidence without treating six instances of one root
+cause like six independent design failures.
+
+The grouped penalty is converted to a score with
+`round(100 * exp(-penalty / 90))`. The smooth decay retains the calibrated
+impact of a single finding while avoiding the abrupt saturation caused by
+linear subtraction. Errors and individual findings remain authoritative; the
+score is only a comparison aid.
+
 ## Adding A Rule
 
 1. Choose a category and stable ID.
