@@ -317,16 +317,6 @@ hiding distinct failures, and the real-world distribution is explainable.
 
 Result: v0.1.1 is fully released and publicly installable from npm and GitHub.
 
-### Loop 12 - Launch distribution plan
-
-- Added `docs/LAUNCH_PLAN.zh-CN.md` with positioning, launch assets, prioritized
-  channels, ready-to-use Chinese and English copy, a 14-day schedule, adoption
-  metrics, and anti-spam constraints.
-- Prioritized verified installs, external CI adoption, actionable feedback, and
-  contributors over vanity-star tactics.
-
-Result: launch execution has a concrete, reusable playbook.
-
 ## Handoff Protocol For Other Coding Agents
 
 1. Read this file and `AGENTS.md` before changing code.
