@@ -1,5 +1,5 @@
 {
-  "name": "skillcheck",
+  "name": "@zhouder/skillcheck",
   "version": "0.1.0",
   "description": "The quality gate for Agent Skills: spec validation, security checks, context analysis, and publish-ready reports.",
   "type": "module",

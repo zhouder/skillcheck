@@ -36,28 +36,28 @@ examples/csv-review/SKILL.md | 2 files | ~88 context tokens
 Node.js 20.12 or newer is required.
 
 ```bash
-npx skillcheck ./my-skill
+npx @zhouder/skillcheck ./my-skill
 ```
 
 Analyze every skill below a repository:
 
 ```bash
-npx skillcheck .
+npx @zhouder/skillcheck .
 ```
 
 Generate machine-readable reports:
 
 ```bash
-npx skillcheck . --format json --output skillcheck.json
-npx skillcheck . --format sarif --output skillcheck.sarif
-npx skillcheck . --format markdown --output skillcheck.md
-npx skillcheck . --format badge --output skillcheck-badge.json
+npx @zhouder/skillcheck . --format json --output skillcheck.json
+npx @zhouder/skillcheck . --format sarif --output skillcheck.sarif
+npx @zhouder/skillcheck . --format markdown --output skillcheck.md
+npx @zhouder/skillcheck . --format badge --output skillcheck-badge.json
 ```
 
 Create a minimal skill:
 
 ```bash
-npx skillcheck init ./skills/csv-review
+npx @zhouder/skillcheck init ./skills/csv-review
 ```
 
 ## Exit Codes
@@ -71,8 +71,8 @@ npx skillcheck init ./skills/csv-review
 The default threshold is `error`. Change it from the command line:
 
 ```bash
-npx skillcheck . --fail-on warning
-npx skillcheck . --fail-on never
+npx @zhouder/skillcheck . --fail-on warning
+npx @zhouder/skillcheck . --fail-on never
 ```
 
 ## Configuration
@@ -83,7 +83,7 @@ never executes project code.
 
 ```json
 {
-  "$schema": "https://unpkg.com/skillcheck/schema/config.schema.json",
+  "$schema": "https://unpkg.com/@zhouder/skillcheck/schema/config.schema.json",
   "ignore": ["**/vendor/**", "**/generated/**"],
   "maxDepth": 8,
   "failOn": "warning",
