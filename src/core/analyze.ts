@@ -16,7 +16,7 @@ import type {
   SkillResult
 } from "./types.js";
 
-export const SKILLCHECK_VERSION = "0.1.0";
+export const SKILLCHECK_VERSION = "0.1.1";
 
 export async function analyze(options: AnalyzeOptions = {}): Promise<AnalysisReport> {
   const cwd = path.resolve(options.cwd ?? process.cwd());

@@ -14,7 +14,7 @@ Skillcheck is an offline quality gate for the open
 and produces reports that work locally and in GitHub Actions.
 
 ```text
-Skillcheck 0.1.0
+Skillcheck 0.1.1
 
 csv-review  100/100 A
 examples/csv-review/SKILL.md | 2 files | ~88 context tokens

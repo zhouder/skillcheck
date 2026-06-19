@@ -11,7 +11,7 @@
 Skillcheck 是面向开放 [Agent Skills 规范](https://agentskills.io/specification) 的离线质量门禁。它可以验证 `SKILL.md`、扫描技能包中的高置信度风险、测量上下文开销，并生成适用于本地环境和 GitHub Actions 的报告。
 
 ```text
-Skillcheck 0.1.0
+Skillcheck 0.1.1
 
 csv-review  100/100 A
 examples/csv-review/SKILL.md | 2 files | ~88 context tokens

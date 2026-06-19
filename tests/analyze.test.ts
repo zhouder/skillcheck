@@ -13,7 +13,7 @@ describe("analysis report", () => {
     const report = await analyze({ cwd: root });
 
     expect(report.schemaVersion).toBe("1");
-    expect(report.tool).toEqual({ name: "skillcheck", version: "0.1.0" });
+    expect(report.tool).toEqual({ name: "skillcheck", version: "0.1.1" });
     expect(report.summary.skills).toBe(2);
     expect(report.summary.errors).toBeGreaterThan(0);
     expect(report.summary.lowestScore).toBeLessThan(80);

@@ -6,9 +6,8 @@ This snapshot tests Skillcheck against public Agent Skills from six independent,
 widely used repositories. It is a compatibility and false-positive review, not
 an endorsement of the sampled projects.
 
-The results were produced from the current `main` branch after the unreleased
-precision fixes and scoring calibration described below. npm v0.1.0 does not
-yet include these refinements.
+The results were produced from the v0.1.1 release candidate after the precision
+fixes and scoring calibration described below.
 
 ## Method
 

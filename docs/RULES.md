@@ -1,6 +1,6 @@
 # Rule Reference
 
-Skillcheck v0.1.0 ships deterministic rules in five categories. Every finding
+Skillcheck v0.1.1 ships deterministic rules in five categories. Every finding
 includes a stable rule ID, severity, source location, evidence when available,
 and a remediation.
 

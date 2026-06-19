@@ -5,6 +5,8 @@ Versioning.
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-06-19
+
 ### Added
 
 - Reproducible real-world validation across six public Agent Skill repositories

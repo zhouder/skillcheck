@@ -6,7 +6,7 @@ import { discoverSkills } from "./discovery.js";
 import { createFinding, normalizePath } from "./finding.js";
 import { parseSkill } from "./parser.js";
 import { scoreFindings, scoreGrade } from "./scoring.js";
-export const SKILLCHECK_VERSION = "0.1.0";
+export const SKILLCHECK_VERSION = "0.1.1";
 export async function analyze(options = {}) {
     const cwd = path.resolve(options.cwd ?? process.cwd());
     const { config, configFile } = await loadConfig({
