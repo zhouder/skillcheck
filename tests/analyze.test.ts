@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import { analyze } from "../src/core/analyze.js";
 import { temporaryDirectory, validSkillMarkdown, writeSkill } from "./helpers.js";
@@ -9,11 +10,14 @@ describe("analysis report", () => {
       "references/guide.md": "# Guide\n"
     });
     await writeSkill(root, "bad", "---\nname: BAD\ndescription: Bad\n---\n");
+    const packageJson = JSON.parse(
+      await readFile(new URL("../package.json", import.meta.url), "utf8")
+    ) as { version: string };
 
     const report = await analyze({ cwd: root });
 
     expect(report.schemaVersion).toBe("1");
-    expect(report.tool).toEqual({ name: "skillcheck", version: "0.1.1" });
+    expect(report.tool).toEqual({ name: "skillcheck", version: packageJson.version });
     expect(report.summary.skills).toBe(2);
     expect(report.summary.errors).toBeGreaterThan(0);
     expect(report.summary.lowestScore).toBeLessThan(80);
