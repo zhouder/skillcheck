@@ -39,3 +39,47 @@ jobs:
       - run: node dist/cli.js examples/csv-review
       - run: npm run package:check
       - run: node dist/cli.js --version
+
+  action-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build:all
+      - id: clean
+        name: Run the bundled Action against a valid skill
+        uses: ./
+        with:
+          path: examples/csv-review
+          fail-on: warning
+          sarif-file: .tmp/skillcheck.sarif
+      - name: Verify successful Action outputs
+        shell: bash
+        env:
+          SCORE: ${{ steps.clean.outputs.score }}
+          SKILLS: ${{ steps.clean.outputs.skills }}
+          ERRORS: ${{ steps.clean.outputs.errors }}
+          WARNINGS: ${{ steps.clean.outputs.warnings }}
+        run: |
+          test "$SCORE" = "100"
+          test "$SKILLS" = "1"
+          test "$ERRORS" = "0"
+          test "$WARNINGS" = "0"
+          test -s .tmp/skillcheck.sarif
+      - id: invalid
+        name: Run the bundled Action against an invalid skill
+        continue-on-error: true
+        uses: ./
+        with:
+          path: tests/fixtures/action-invalid
+          fail-on: error
+          sarif-file: ""
+      - name: Verify findings fail the Action
+        shell: bash
+        env:
+          OUTCOME: ${{ steps.invalid.outcome }}
+        run: test "$OUTCOME" = "failure"
