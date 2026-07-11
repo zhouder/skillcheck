@@ -5,6 +5,16 @@ Versioning.
 
 ## [Unreleased]
 
+### Added
+
+- End-to-end CI smoke coverage for successful and failing GitHub Action runs
+- Release validation that rejects tags which do not match `package.json`
+
+### Changed
+
+- Read the reported Skillcheck version from package metadata instead of a duplicate constant
+- Cache bounded text-file reads across rules analyzing the same skill
+
 ## [0.1.1] - 2026-06-19
 
 ### Added
