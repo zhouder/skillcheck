@@ -7,6 +7,8 @@ import { markdownReport, sarifReport } from "../reporters/index.js";
 import { allFindings } from "../reporters/shared.js";
 import { severityAtLeast } from "../rules/helpers.js";
 
+const MAX_ANNOTATIONS = 100;
+
 async function run(): Promise<void> {
   try {
     const targetPath = core.getInput("path") || ".";
@@ -46,7 +48,8 @@ async function run(): Promise<void> {
 }
 
 function annotate(report: AnalysisReport): void {
-  for (const finding of allFindings(report)) {
+  const findings = allFindings(report);
+  for (const finding of findings.slice(0, MAX_ANNOTATIONS)) {
     const properties: core.AnnotationProperties = {
       title: `${finding.title} (${finding.ruleId})`,
       file: finding.location.path,
@@ -55,6 +58,11 @@ function annotate(report: AnalysisReport): void {
     };
     const message = finding.help ? `${finding.message} Fix: ${finding.help}` : finding.message;
     annotateFinding(finding, message, properties);
+  }
+  if (findings.length > MAX_ANNOTATIONS) {
+    core.notice(
+      `Showing ${MAX_ANNOTATIONS.toLocaleString()} of ${findings.length.toLocaleString()} findings as annotations. Review the Markdown summary or SARIF report for the complete result.`
+    );
   }
 }
 
