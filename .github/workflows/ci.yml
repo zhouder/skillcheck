@@ -65,24 +65,32 @@ jobs:
           : > "$GITHUB_OUTPUT"
           : > "$GITHUB_STEP_SUMMARY"
           node dist/action/index.js
-      - name: Verify successful Action outputs
+      - name: Verify successful Action outcome
         if: always()
         shell: bash
         env:
           OUTCOME: ${{ steps.valid.outcome }}
+        run: test "$OUTCOME" = "success"
+      - name: Verify Action report files
+        if: always()
+        shell: bash
         run: |
-          echo "Action outcome: $OUTCOME"
-          echo "Action outputs:"
-          cat .tmp/valid-output || true
-          test "$OUTCOME" = "success"
           test -s .tmp/valid-output
           test -s .tmp/valid-summary
           test -s .tmp/skillcheck.sarif
+      - name: Verify Action output keys
+        if: always()
+        shell: bash
+        run: |
+          cat .tmp/valid-output
           grep -Eq '^score(=|<<)' .tmp/valid-output
           grep -Eq '^skills(=|<<)' .tmp/valid-output
           grep -Eq '^errors(=|<<)' .tmp/valid-output
           grep -Eq '^warnings(=|<<)' .tmp/valid-output
-          grep -q '100' .tmp/valid-output
+      - name: Verify clean Action score
+        if: always()
+        shell: bash
+        run: grep -q '100' .tmp/valid-output
       - id: invalid
         name: Run the bundled Action against an invalid skill
         continue-on-error: true
