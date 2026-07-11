@@ -36,6 +36,8 @@ jobs:
       - run: npm ci
       - run: npm run test:coverage
       - run: npm run build:all
+      - name: Verify the committed Action bundle is current
+        run: git diff --exit-code -- dist/action/index.js
       - run: node dist/cli.js examples/csv-review
       - run: npm run package:check
       - run: node dist/cli.js --version
