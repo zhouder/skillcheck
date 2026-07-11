@@ -21,9 +21,9 @@ describe("security scan boundaries", () => {
       "references/guide.md": "reference material\n".repeat(40_000)
     });
 
-    const finding = (await analyze({ cwd: root, paths: ["large-reference"] })).results[0]?.findings.find(
-      (item) => item.ruleId === "security/reference-scan-incomplete"
-    );
+    const finding = (
+      await analyze({ cwd: root, paths: ["large-reference"] })
+    ).results[0]?.findings.find((item) => item.ruleId === "security/reference-scan-incomplete");
     expect(finding?.severity).toBe("warning");
   });
 });

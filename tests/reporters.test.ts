@@ -92,7 +92,7 @@ describe("reporters", () => {
     const output = markdownReport(await analyze({ cwd: root }));
 
     expect(output).not.toContain("<img src=x");
-    expect(output).toContain("&lt;img src=x onerror=alert\(1\)&gt;");
+    expect(output).toContain("&lt;img src=x onerror=alert(1)&gt;");
     expect(output).not.toContain("# [Fake]");
   });
 

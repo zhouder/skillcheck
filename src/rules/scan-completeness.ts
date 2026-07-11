@@ -9,7 +9,8 @@ const scriptScanIncomplete = defineRule(
       "Every bundled script must be inspected before a skill can be considered safe to publish.",
     category: "security",
     defaultSeverity: "error",
-    recommendation: "Reduce, split, or remove oversized scripts so the complete content can be scanned."
+    recommendation:
+      "Reduce, split, or remove oversized scripts so the complete content can be scanned."
   },
   async ({ skill, createFinding }) => {
     const scan = await readScannableScan(skill);
@@ -37,7 +38,8 @@ const referenceScanIncomplete = defineRule(
       "Skipped text resources reduce confidence that the skill package is free from unsafe instructions.",
     category: "security",
     defaultSeverity: "warning",
-    recommendation: "Reduce or split oversized text resources so the complete package can be scanned."
+    recommendation:
+      "Reduce or split oversized text resources so the complete package can be scanned."
   },
   async ({ skill, createFinding }) => {
     const scan = await readScannableScan(skill);

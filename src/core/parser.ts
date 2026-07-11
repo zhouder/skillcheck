@@ -265,7 +265,9 @@ async function listSkillFiles(
   async function walk(current: string, depth: number): Promise<void> {
     if (stopped) return;
     if (depth > MAX_BUNDLE_DEPTH) {
-      stopEnumeration(`Analysis stopped after exceeding the maximum bundle depth of ${MAX_BUNDLE_DEPTH}.`);
+      stopEnumeration(
+        `Analysis stopped after exceeding the maximum bundle depth of ${MAX_BUNDLE_DEPTH}.`
+      );
       return;
     }
     directoryCount += 1;

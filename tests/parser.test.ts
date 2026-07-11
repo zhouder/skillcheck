@@ -54,7 +54,11 @@ describe("skill parser", () => {
 
   it("ignores dependency and generated directories inside a skill", async () => {
     const root = await temporaryDirectory();
-    const directory = await writeSkill(root, "ignored-bundle", validSkillMarkdown("ignored-bundle"));
+    const directory = await writeSkill(
+      root,
+      "ignored-bundle",
+      validSkillMarkdown("ignored-bundle")
+    );
     await mkdir(path.join(directory, "node_modules", "package"), { recursive: true });
     await mkdir(path.join(directory, ".git", "objects"), { recursive: true });
     await mkdir(path.join(directory, "dist"), { recursive: true });
