@@ -22,6 +22,7 @@ describe("reporters", () => {
     expect(sarif.version).toBe("2.1.0");
     expect(sarif.runs).toHaveLength(1);
     expect(sarif.runs[0]?.results).toEqual([]);
+    expect(sarif.runs[0]?.tool.driver.informationUri).toContain("@zhouder/skillcheck");
 
     expect(markdownReport(report)).toContain("report-skill - 100/100 (A)");
     expect(prettyReport(report, { color: false })).toContain("No findings");
@@ -50,14 +51,14 @@ describe("reporters", () => {
     expect(prettyReport(report, { color: false })).toContain("error");
   });
 
-  it("emits a neutral badge when no skills are found", async () => {
+  it("uses an error badge when project-level discovery fails", async () => {
     const root = await temporaryDirectory();
     const report = await analyze({ cwd: root });
     expect(badgeObject(report)).toEqual({
       schemaVersion: 1,
       label: "skillcheck",
-      message: "no skills",
-      color: "lightgrey"
+      message: "1 error",
+      color: "red"
     });
     const finding = report.globalFindings[0];
     expect(finding).toBeDefined();
@@ -79,6 +80,20 @@ describe("reporters", () => {
     });
     expect(markdownReport(report)).toContain("Project findings");
     expect(prettyReport(report, { color: false })).toContain("No SKILL.md files were found");
+  });
+
+  it("escapes untrusted Markdown and HTML in reports", async () => {
+    const root = await temporaryDirectory();
+    await writeSkill(
+      root,
+      "unsafe-report",
+      "---\nname: '<img src=x onerror=alert(1)>'\ndescription: Bad\n---\n# [Fake](https://example.com)\n"
+    );
+    const output = markdownReport(await analyze({ cwd: root }));
+
+    expect(output).not.toContain("<img src=x");
+    expect(output).toContain("&lt;img src=x onerror=alert\(1\)&gt;");
+    expect(output).not.toContain("# [Fake]");
   });
 
   it("uses stable badge colors at each score boundary", () => {
