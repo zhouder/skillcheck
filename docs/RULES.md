@@ -1,8 +1,8 @@
 # Rule Reference
 
-Skillcheck v0.1.1 ships deterministic rules in five categories. Every finding
-includes a stable rule ID, severity, source location, evidence when available,
-and a remediation.
+Skillcheck ships deterministic rules in five categories. Every finding includes a
+stable rule ID, severity, source location, evidence when available, and a
+remediation.
 
 ## Specification
 
@@ -16,13 +16,17 @@ and a remediation.
 | `spec/metadata` | error | Require flat string key-value metadata |
 | `spec/optional-field-type` | error | Require string license and allowed-tools values |
 
-Parser failures use `parse/*` IDs and are always reported independently of
-rule overrides because later checks cannot safely reinterpret malformed input.
+Parser failures use `parse/*` IDs and are always reported independently of rule
+overrides because later checks cannot safely reinterpret malformed input.
+Package enumeration also stops with `parse/enumeration-limit` when file,
+directory, directory-entry, or depth limits are exceeded.
 
 ## Security
 
 | Rule | Default | Purpose |
 | --- | --- | --- |
+| `security/script-scan-incomplete` | error | Report scripts that could not be completely inspected |
+| `security/reference-scan-incomplete` | warning | Report text resources that could not be completely inspected |
 | `security/remote-execution` | error | Detect download-to-shell and remote expression execution |
 | `security/destructive-command` | error | Detect broad recursive deletion and disk formatting |
 | `security/credential-access` | warning | Detect reading or printing credential material |
@@ -31,8 +35,12 @@ rule overrides because later checks cannot safely reinterpret malformed input.
 | `security/symlink-outside` | error | Detect symbolic links escaping the skill directory |
 | `security/insecure-url` | warning | Detect public resources loaded over plain HTTP |
 
-These checks are static heuristics. They do not execute scripts and do not
-claim to establish that an unflagged skill is safe.
+Text scanning is bounded to 512 KiB per file and 4 MiB per skill. Exceeding a
+limit is never silent: skipped scripts are errors and skipped reference text is
+a warning. Binary or unreadable candidate files are reported the same way.
+
+These checks are static heuristics. They do not execute scripts and do not claim
+to establish that an unflagged skill is safe.
 
 ## Quality
 
