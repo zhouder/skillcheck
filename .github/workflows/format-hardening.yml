@@ -1,8 +1,8 @@
 name: Format hardening branch
 
 on:
-  push:
-    branches: [agent/v0.1.2-security-hardening]
+  pull_request:
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 permissions:
@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   format:
-    if: github.actor != 'github-actions[bot]'
+    if: github.head_ref == 'agent/v0.1.2-security-hardening' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
