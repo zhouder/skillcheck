@@ -1,7 +1,4 @@
-import { createRequire } from "node:module";
-
-const require = createRequire(import.meta.url);
-const packageJson = require("../../package.json") as { version?: unknown };
+import packageJson from "../../package.json" with { type: "json" };
 
 if (typeof packageJson.version !== "string" || packageJson.version.length === 0) {
   throw new Error("package.json must contain a non-empty version string.");
