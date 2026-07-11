@@ -50,7 +50,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build:all
-      - name: Run the bundled Action against a valid skill
+      - id: valid
+        name: Run the bundled Action against a valid skill
+        continue-on-error: true
         shell: bash
         env:
           INPUT_PATH: examples/csv-review
@@ -63,14 +65,24 @@ jobs:
           : > "$GITHUB_OUTPUT"
           : > "$GITHUB_STEP_SUMMARY"
           node dist/action/index.js
-          test -s "$GITHUB_OUTPUT"
-          test -s "$GITHUB_STEP_SUMMARY"
+      - name: Verify successful Action outputs
+        if: always()
+        shell: bash
+        env:
+          OUTCOME: ${{ steps.valid.outcome }}
+        run: |
+          echo "Action outcome: $OUTCOME"
+          echo "Action outputs:"
+          cat .tmp/valid-output || true
+          test "$OUTCOME" = "success"
+          test -s .tmp/valid-output
+          test -s .tmp/valid-summary
           test -s .tmp/skillcheck.sarif
-          grep -Eq '^score(=|<<)' "$GITHUB_OUTPUT"
-          grep -Eq '^skills(=|<<)' "$GITHUB_OUTPUT"
-          grep -Eq '^errors(=|<<)' "$GITHUB_OUTPUT"
-          grep -Eq '^warnings(=|<<)' "$GITHUB_OUTPUT"
-          grep -q '100' "$GITHUB_OUTPUT"
+          grep -Eq '^score(=|<<)' .tmp/valid-output
+          grep -Eq '^skills(=|<<)' .tmp/valid-output
+          grep -Eq '^errors(=|<<)' .tmp/valid-output
+          grep -Eq '^warnings(=|<<)' .tmp/valid-output
+          grep -q '100' .tmp/valid-output
       - id: invalid
         name: Run the bundled Action against an invalid skill
         continue-on-error: true
