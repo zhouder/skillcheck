@@ -22,15 +22,25 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run format
-      - name: Commit formatting
+      - name: Capture type and test diagnostics
         shell: bash
         run: |
-          if git diff --quiet; then
-            echo "No formatting changes required."
-            exit 0
-          fi
+          {
+            echo '=== TYPECHECK ==='
+            npm run typecheck || true
+            echo
+            echo '=== TESTS ==='
+            npm run test:run || true
+          } > hardening-diagnostics.txt 2>&1
+      - name: Commit formatting and diagnostics
+        shell: bash
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "Format security hardening changes"
+          if git diff --cached --quiet; then
+            echo "No changes required."
+            exit 0
+          fi
+          git commit -m "Capture security hardening diagnostics"
           git push
