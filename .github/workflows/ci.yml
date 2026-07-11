@@ -50,34 +50,41 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build:all
-      - id: clean
-        name: Run the bundled Action against a valid skill
-        uses: ./
-        with:
-          path: examples/csv-review
-          fail-on: warning
-          sarif-file: .tmp/skillcheck.sarif
-      - name: Verify successful Action outputs
+      - name: Run the bundled Action against a valid skill
         shell: bash
         env:
-          SCORE: ${{ steps.clean.outputs.score }}
-          SKILLS: ${{ steps.clean.outputs.skills }}
-          ERRORS: ${{ steps.clean.outputs.errors }}
-          WARNINGS: ${{ steps.clean.outputs.warnings }}
+          INPUT_PATH: examples/csv-review
+          INPUT_FAIL-ON: warning
+          INPUT_SARIF-FILE: .tmp/skillcheck.sarif
+          GITHUB_OUTPUT: .tmp/valid-output
+          GITHUB_STEP_SUMMARY: .tmp/valid-summary
         run: |
-          test "$SCORE" = "100"
-          test "$SKILLS" = "1"
-          test "$ERRORS" = "0"
-          test "$WARNINGS" = "0"
+          mkdir -p .tmp
+          : > "$GITHUB_OUTPUT"
+          : > "$GITHUB_STEP_SUMMARY"
+          node dist/action/index.js
+          test -s "$GITHUB_OUTPUT"
+          test -s "$GITHUB_STEP_SUMMARY"
           test -s .tmp/skillcheck.sarif
+          grep -Eq '^score(=|<<)' "$GITHUB_OUTPUT"
+          grep -Eq '^skills(=|<<)' "$GITHUB_OUTPUT"
+          grep -Eq '^errors(=|<<)' "$GITHUB_OUTPUT"
+          grep -Eq '^warnings(=|<<)' "$GITHUB_OUTPUT"
+          grep -q '100' "$GITHUB_OUTPUT"
       - id: invalid
         name: Run the bundled Action against an invalid skill
         continue-on-error: true
-        uses: ./
-        with:
-          path: tests/fixtures/action-invalid
-          fail-on: error
-          sarif-file: ""
+        shell: bash
+        env:
+          INPUT_PATH: tests/fixtures/action-invalid
+          INPUT_FAIL-ON: error
+          INPUT_SARIF-FILE: ""
+          GITHUB_OUTPUT: .tmp/invalid-output
+          GITHUB_STEP_SUMMARY: .tmp/invalid-summary
+        run: |
+          : > "$GITHUB_OUTPUT"
+          : > "$GITHUB_STEP_SUMMARY"
+          node dist/action/index.js
       - name: Verify findings fail the Action
         shell: bash
         env:
