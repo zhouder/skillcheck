@@ -3,6 +3,7 @@ name: Format hardening branch
 on:
   push:
     branches: [agent/v0.1.2-security-hardening]
+  workflow_dispatch:
 
 permissions:
   contents: write
