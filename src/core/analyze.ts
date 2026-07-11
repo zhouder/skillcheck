@@ -15,8 +15,9 @@ import type {
   SkillMetrics,
   SkillResult
 } from "./types.js";
+import { SKILLCHECK_VERSION } from "./version.js";
 
-export const SKILLCHECK_VERSION = "0.1.1";
+export { SKILLCHECK_VERSION };
 
 export async function analyze(options: AnalyzeOptions = {}): Promise<AnalysisReport> {
   const cwd = path.resolve(options.cwd ?? process.cwd());

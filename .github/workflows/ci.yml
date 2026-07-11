@@ -39,3 +39,73 @@ jobs:
       - run: node dist/cli.js examples/csv-review
       - run: npm run package:check
       - run: node dist/cli.js --version
+
+  action-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build:all
+      - id: valid
+        name: Run the bundled Action against a valid skill
+        continue-on-error: true
+        shell: bash
+        env:
+          INPUT_PATH: examples/csv-review
+          INPUT_FAIL-ON: warning
+          INPUT_SARIF-FILE: .tmp/skillcheck.sarif
+        run: |
+          mkdir -p .tmp
+          export GITHUB_OUTPUT="$PWD/.tmp/valid-output"
+          export GITHUB_STEP_SUMMARY="$PWD/.tmp/valid-summary"
+          : > "$GITHUB_OUTPUT"
+          : > "$GITHUB_STEP_SUMMARY"
+          node dist/action/index.js
+      - name: Verify successful Action outcome
+        if: always()
+        shell: bash
+        env:
+          OUTCOME: ${{ steps.valid.outcome }}
+        run: test "$OUTCOME" = "success"
+      - name: Verify Action report files
+        if: always()
+        shell: bash
+        run: |
+          test -s .tmp/valid-output
+          test -s .tmp/valid-summary
+          test -s .tmp/skillcheck.sarif
+      - name: Verify Action output keys
+        if: always()
+        shell: bash
+        run: |
+          grep -Eq '^score(=|<<)' .tmp/valid-output
+          grep -Eq '^skills(=|<<)' .tmp/valid-output
+          grep -Eq '^errors(=|<<)' .tmp/valid-output
+          grep -Eq '^warnings(=|<<)' .tmp/valid-output
+      - name: Verify clean Action score
+        if: always()
+        shell: bash
+        run: grep -q '100' .tmp/valid-output
+      - id: invalid
+        name: Run the bundled Action against an invalid skill
+        continue-on-error: true
+        shell: bash
+        env:
+          INPUT_PATH: tests/fixtures/action-invalid
+          INPUT_FAIL-ON: error
+          INPUT_SARIF-FILE: ""
+        run: |
+          export GITHUB_OUTPUT="$PWD/.tmp/invalid-output"
+          export GITHUB_STEP_SUMMARY="$PWD/.tmp/invalid-summary"
+          : > "$GITHUB_OUTPUT"
+          : > "$GITHUB_STEP_SUMMARY"
+          node dist/action/index.js
+      - name: Verify findings fail the Action
+        shell: bash
+        env:
+          OUTCOME: ${{ steps.invalid.outcome }}
+        run: test "$OUTCOME" = "failure"

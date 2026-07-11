@@ -61,7 +61,26 @@ export function isInside(parent: string, candidate: string): boolean {
   return relative === "" || (!relative.startsWith(`..${path.sep}`) && relative !== "..");
 }
 
-export async function readScannableFiles(skill: ParsedSkill): Promise<ScannableFile[]> {
+export interface ScannableFile {
+  path: string;
+  relativePath: string;
+  content: string;
+}
+
+const scannableFileCache = new WeakMap<ParsedSkill, Promise<ScannableFile[]>>();
+
+export function readScannableFiles(skill: ParsedSkill): Promise<ScannableFile[]> {
+  const cached = scannableFileCache.get(skill);
+  if (cached) {
+    return cached;
+  }
+
+  const pending = loadScannableFiles(skill);
+  scannableFileCache.set(skill, pending);
+  return pending;
+}
+
+async function loadScannableFiles(skill: ParsedSkill): Promise<ScannableFile[]> {
   const result: ScannableFile[] = [];
   let total = 0;
 
@@ -90,12 +109,6 @@ export async function readScannableFiles(skill: ParsedSkill): Promise<ScannableF
     }
   }
   return result;
-}
-
-export interface ScannableFile {
-  path: string;
-  relativePath: string;
-  content: string;
 }
 
 export function regexFindings(options: {
