@@ -40,6 +40,14 @@ jobs:
         run: git diff --exit-code -- dist/action/index.js
       - run: node dist/cli.js examples/csv-review
       - run: npm run package:check
+      - name: Verify the packed npm artifact installs and runs
+        shell: bash
+        run: |
+          mkdir -p .tmp/package .tmp/install
+          npm pack --pack-destination .tmp/package
+          npm install --prefix .tmp/install .tmp/package/*.tgz
+          node .tmp/install/node_modules/@zhouder/skillcheck/dist/cli.js --version
+          node --input-type=module -e "const pkg = await import('./.tmp/install/node_modules/@zhouder/skillcheck/dist/index.js'); if (typeof pkg.analyze !== 'function') process.exit(1)"
       - run: node dist/cli.js --version
 
   action-smoke:
@@ -52,6 +60,26 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build:all
+      - id: local-action
+        name: Run the local Action through action.yml
+        uses: ./
+        with:
+          path: examples/csv-review
+          fail-on: warning
+          sarif-file: .tmp/local-action.sarif
+      - name: Verify local Action outputs
+        shell: bash
+        env:
+          SCORE: ${{ steps.local-action.outputs.score }}
+          SKILLS: ${{ steps.local-action.outputs.skills }}
+          ERRORS: ${{ steps.local-action.outputs.errors }}
+          WARNINGS: ${{ steps.local-action.outputs.warnings }}
+        run: |
+          test "$SCORE" = "100"
+          test "$SKILLS" = "1"
+          test "$ERRORS" = "0"
+          test "$WARNINGS" = "0"
+          test -s .tmp/local-action.sarif
       - id: valid
         name: Run the bundled Action against a valid skill
         continue-on-error: true
