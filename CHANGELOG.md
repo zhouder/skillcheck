@@ -9,11 +9,24 @@ Versioning.
 
 - End-to-end CI smoke coverage for successful and failing GitHub Action runs
 - Release validation that rejects tags which do not match `package.json`
+- Explicit findings when scripts or reference text cannot be fully scanned
+- Bounded package enumeration across files, directories, entries, and depth
+- Installation testing for the packed npm artifact and a real local Action run through `action.yml`
 
 ### Changed
 
 - Read the reported Skillcheck version from package metadata instead of a duplicate constant
 - Cache bounded text-file reads across rules analyzing the same skill
+- Escape untrusted Markdown and HTML in generated reports
+- Make badges prioritize project errors and warnings over an otherwise high skill score
+- Limit GitHub annotations to 100 while retaining complete Markdown and SARIF output
+- Ignore common dependency, VCS, environment, coverage, and build directories inside a skill package
+- Verify the committed GitHub Action bundle in both CI and release workflows
+
+### Fixed
+
+- Correct the scoped npm package URL in SARIF metadata
+- Keep the committed GitHub Action bundle synchronized with its TypeScript source
 
 ## [0.1.1] - 2026-06-19
 

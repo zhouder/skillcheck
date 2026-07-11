@@ -30,6 +30,9 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run test:coverage
+      - run: npm run build:all
+      - name: Verify the committed Action bundle is current
+        run: git diff --exit-code -- dist/action/index.js
       - id: registry
         name: Check whether this version is already published
         shell: bash

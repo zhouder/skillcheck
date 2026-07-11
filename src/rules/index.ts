@@ -2,11 +2,13 @@ import type { Rule } from "../core/types.js";
 import { efficiencyRules } from "./efficiency.js";
 import { portabilityRules } from "./portability.js";
 import { qualityRules } from "./quality.js";
+import { scanCompletenessRules } from "./scan-completeness.js";
 import { securityRules } from "./security.js";
 import { specRules } from "./spec.js";
 
 export const rules: Rule[] = [
   ...specRules,
+  ...scanCompletenessRules,
   ...securityRules,
   ...qualityRules,
   ...efficiencyRules,

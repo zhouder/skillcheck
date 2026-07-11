@@ -1,3 +1,4 @@
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { parseSkill } from "../src/core/parser.js";
@@ -49,5 +50,38 @@ describe("skill parser", () => {
 
     expect(parsed.parseFindings.some((finding) => finding.ruleId === "parse/yaml")).toBe(true);
     expect(parsed.skillFile).toBe(path.join(duplicate, "SKILL.md"));
+  });
+
+  it("ignores dependency and generated directories inside a skill", async () => {
+    const root = await temporaryDirectory();
+    const directory = await writeSkill(
+      root,
+      "ignored-bundle",
+      validSkillMarkdown("ignored-bundle")
+    );
+    await mkdir(path.join(directory, "node_modules", "package"), { recursive: true });
+    await mkdir(path.join(directory, ".git", "objects"), { recursive: true });
+    await mkdir(path.join(directory, "dist"), { recursive: true });
+    await writeFile(path.join(directory, "node_modules", "package", "index.js"), "unsafe", "utf8");
+    await writeFile(path.join(directory, ".git", "objects", "blob"), "unsafe", "utf8");
+    await writeFile(path.join(directory, "dist", "bundle.js"), "unsafe", "utf8");
+
+    const parsed = await parseSkill(directory, root);
+    expect(parsed.files.map((file) => file.relativePath)).toEqual(["SKILL.md"]);
+  });
+
+  it("stops enumeration when a package exceeds the depth limit", async () => {
+    const root = await temporaryDirectory();
+    const directory = await writeSkill(root, "deep-package", validSkillMarkdown("deep-package"));
+    let current = directory;
+    for (let index = 0; index < 34; index += 1) {
+      current = path.join(current, `level-${index}`);
+      await mkdir(current);
+    }
+
+    const parsed = await parseSkill(directory, root);
+    expect(
+      parsed.parseFindings.some((finding) => finding.ruleId === "parse/enumeration-limit")
+    ).toBe(true);
   });
 });

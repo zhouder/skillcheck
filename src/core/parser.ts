@@ -10,6 +10,17 @@ import type { Finding, MarkdownReference, ParsedSkill, SkillFile, SkillMetadata 
 
 const MAX_SKILL_FILE_BYTES = 1024 * 1024;
 const MAX_FILES = 5_000;
+const MAX_DIRECTORIES = 2_000;
+const MAX_DIRECTORY_ENTRIES = 10_000;
+const MAX_BUNDLE_DEPTH = 32;
+const IGNORED_BUNDLE_DIRECTORIES = new Set([
+  ".git",
+  "node_modules",
+  "dist",
+  "coverage",
+  ".venv",
+  "venv"
+]);
 
 export async function parseSkill(directory: string, reportRoot: string): Promise<ParsedSkill> {
   const skillFile = path.join(directory, "SKILL.md");
@@ -231,9 +242,39 @@ async function listSkillFiles(
   findings: Finding[]
 ): Promise<SkillFile[]> {
   const files: SkillFile[] = [];
+  let directoryCount = 0;
+  let entryCount = 0;
+  let stopped = false;
 
-  async function walk(current: string): Promise<void> {
-    if (files.length >= MAX_FILES) {
+  function stopEnumeration(message: string): void {
+    if (stopped) return;
+    stopped = true;
+    findings.push(
+      parserFinding(
+        "parse/enumeration-limit",
+        "Skill package enumeration limit reached",
+        message,
+        "error",
+        directory,
+        reportRoot,
+        "Remove generated directories and keep the skill package small and shallow."
+      )
+    );
+  }
+
+  async function walk(current: string, depth: number): Promise<void> {
+    if (stopped) return;
+    if (depth > MAX_BUNDLE_DEPTH) {
+      stopEnumeration(
+        `Analysis stopped after exceeding the maximum bundle depth of ${MAX_BUNDLE_DEPTH}.`
+      );
+      return;
+    }
+    directoryCount += 1;
+    if (directoryCount > MAX_DIRECTORIES) {
+      stopEnumeration(
+        `Analysis stopped after visiting ${MAX_DIRECTORIES.toLocaleString()} directories.`
+      );
       return;
     }
 
@@ -257,11 +298,19 @@ async function listSkillFiles(
 
     const entries = [];
     for await (const entry of handle) {
+      entryCount += 1;
+      if (entryCount > MAX_DIRECTORY_ENTRIES) {
+        stopEnumeration(
+          `Analysis stopped after inspecting ${MAX_DIRECTORY_ENTRIES.toLocaleString()} directory entries.`
+        );
+        return;
+      }
       entries.push(entry);
     }
     entries.sort((left, right) => left.name.localeCompare(right.name));
 
     for (const entry of entries) {
+      if (stopped) return;
       const absolutePath = path.join(current, entry.name);
       const relativePath = normalizePath(path.relative(directory, absolutePath));
       let stats: Stats;
@@ -285,29 +334,20 @@ async function listSkillFiles(
         const target = await readlink(absolutePath).catch(() => "<unreadable>");
         files.push({ absolutePath, relativePath, size: 0, kind: "symlink", symlinkTarget: target });
       } else if (stats.isDirectory()) {
-        await walk(absolutePath);
+        if (IGNORED_BUNDLE_DIRECTORIES.has(entry.name)) continue;
+        await walk(absolutePath, depth + 1);
       } else if (stats.isFile()) {
         files.push({ absolutePath, relativePath, size: stats.size, kind: "file" });
       }
 
       if (files.length >= MAX_FILES) {
-        findings.push(
-          parserFinding(
-            "parse/file-limit",
-            "Skill contains too many files",
-            `Analysis stopped after ${MAX_FILES.toLocaleString()} files.`,
-            "warning",
-            directory,
-            reportRoot,
-            "Remove generated or unrelated files from the skill package."
-          )
-        );
+        stopEnumeration(`Analysis stopped after ${MAX_FILES.toLocaleString()} files.`);
         return;
       }
     }
   }
 
-  await walk(directory);
+  await walk(directory, 0);
   return files;
 }
 

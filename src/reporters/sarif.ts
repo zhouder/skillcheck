@@ -55,7 +55,7 @@ export function sarifObject(report: AnalysisReport): SarifLog {
           driver: {
             name: "Skillcheck",
             version: report.tool.version,
-            informationUri: "https://www.npmjs.com/package/skillcheck",
+            informationUri: "https://www.npmjs.com/package/@zhouder/skillcheck",
             rules: ruleIds.map((id) => sarifRule(id, findings))
           }
         },
