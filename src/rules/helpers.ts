@@ -25,8 +25,8 @@ const TEXT_EXTENSIONS = new Set([
   ".rs"
 ]);
 
-const MAX_SCANNED_FILE_BYTES = 512 * 1024;
-const MAX_TOTAL_SCAN_BYTES = 4 * 1024 * 1024;
+export const MAX_SCANNED_FILE_BYTES = 512 * 1024;
+export const MAX_TOTAL_SCAN_BYTES = 4 * 1024 * 1024;
 
 export function defineRule(meta: RuleMetadata, check: Rule["check"]): Rule {
   return { meta, check };
@@ -67,9 +67,22 @@ export interface ScannableFile {
   content: string;
 }
 
-const scannableFileCache = new WeakMap<ParsedSkill, Promise<ScannableFile[]>>();
+export interface SkippedScannableFile {
+  path: string;
+  relativePath: string;
+  size: number;
+  reason: "file-too-large" | "total-budget" | "binary" | "read-failed";
+}
 
-export function readScannableFiles(skill: ParsedSkill): Promise<ScannableFile[]> {
+export interface ScannableScan {
+  files: ScannableFile[];
+  skipped: SkippedScannableFile[];
+  scannedBytes: number;
+}
+
+const scannableFileCache = new WeakMap<ParsedSkill, Promise<ScannableScan>>();
+
+export function readScannableScan(skill: ParsedSkill): Promise<ScannableScan> {
   const cached = scannableFileCache.get(skill);
   if (cached) {
     return cached;
@@ -80,35 +93,66 @@ export function readScannableFiles(skill: ParsedSkill): Promise<ScannableFile[]>
   return pending;
 }
 
-async function loadScannableFiles(skill: ParsedSkill): Promise<ScannableFile[]> {
-  const result: ScannableFile[] = [];
-  let total = 0;
+export async function readScannableFiles(skill: ParsedSkill): Promise<ScannableFile[]> {
+  return (await readScannableScan(skill)).files;
+}
+
+async function loadScannableFiles(skill: ParsedSkill): Promise<ScannableScan> {
+  const files: ScannableFile[] = [];
+  const skipped: SkippedScannableFile[] = [];
+  let scannedBytes = 0;
 
   for (const file of skill.files) {
-    if (file.kind !== "file" || file.size > MAX_SCANNED_FILE_BYTES) {
+    if (file.kind !== "file" || !isTextCandidate(file.relativePath)) {
       continue;
     }
-    const extension = path.extname(file.relativePath).toLowerCase();
-    const inTextDirectory = /^(scripts|references)\//u.test(file.relativePath);
-    if (!TEXT_EXTENSIONS.has(extension) && !inTextDirectory) {
+    if (file.size > MAX_SCANNED_FILE_BYTES) {
+      skipped.push({
+        path: file.absolutePath,
+        relativePath: file.relativePath,
+        size: file.size,
+        reason: "file-too-large"
+      });
       continue;
     }
-    if (total + file.size > MAX_TOTAL_SCAN_BYTES) {
-      break;
+    if (scannedBytes + file.size > MAX_TOTAL_SCAN_BYTES) {
+      skipped.push({
+        path: file.absolutePath,
+        relativePath: file.relativePath,
+        size: file.size,
+        reason: "total-budget"
+      });
+      continue;
     }
 
     try {
       const content = await readFile(file.absolutePath, "utf8");
       if (content.includes("\0")) {
+        skipped.push({
+          path: file.absolutePath,
+          relativePath: file.relativePath,
+          size: file.size,
+          reason: "binary"
+        });
         continue;
       }
-      result.push({ path: file.absolutePath, relativePath: file.relativePath, content });
-      total += file.size;
+      files.push({ path: file.absolutePath, relativePath: file.relativePath, content });
+      scannedBytes += file.size;
     } catch {
-      // The parser reports unreadable paths. Security rules remain best effort.
+      skipped.push({
+        path: file.absolutePath,
+        relativePath: file.relativePath,
+        size: file.size,
+        reason: "read-failed"
+      });
     }
   }
-  return result;
+  return { files, skipped, scannedBytes };
+}
+
+function isTextCandidate(relativePath: string): boolean {
+  const extension = path.extname(relativePath).toLowerCase();
+  return TEXT_EXTENSIONS.has(extension) || /^(scripts|references)\//u.test(relativePath);
 }
 
 export function regexFindings(options: {
