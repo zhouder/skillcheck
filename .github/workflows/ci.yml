@@ -58,10 +58,10 @@ jobs:
           INPUT_PATH: examples/csv-review
           INPUT_FAIL-ON: warning
           INPUT_SARIF-FILE: .tmp/skillcheck.sarif
-          GITHUB_OUTPUT: .tmp/valid-output
-          GITHUB_STEP_SUMMARY: .tmp/valid-summary
         run: |
           mkdir -p .tmp
+          export GITHUB_OUTPUT="$PWD/.tmp/valid-output"
+          export GITHUB_STEP_SUMMARY="$PWD/.tmp/valid-summary"
           : > "$GITHUB_OUTPUT"
           : > "$GITHUB_STEP_SUMMARY"
           node dist/action/index.js
@@ -82,7 +82,6 @@ jobs:
         if: always()
         shell: bash
         run: |
-          cat .tmp/valid-output
           grep -Eq '^score(=|<<)' .tmp/valid-output
           grep -Eq '^skills(=|<<)' .tmp/valid-output
           grep -Eq '^errors(=|<<)' .tmp/valid-output
@@ -99,9 +98,9 @@ jobs:
           INPUT_PATH: tests/fixtures/action-invalid
           INPUT_FAIL-ON: error
           INPUT_SARIF-FILE: ""
-          GITHUB_OUTPUT: .tmp/invalid-output
-          GITHUB_STEP_SUMMARY: .tmp/invalid-summary
         run: |
+          export GITHUB_OUTPUT="$PWD/.tmp/invalid-output"
+          export GITHUB_STEP_SUMMARY="$PWD/.tmp/invalid-summary"
           : > "$GITHUB_OUTPUT"
           : > "$GITHUB_STEP_SUMMARY"
           node dist/action/index.js
