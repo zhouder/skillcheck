@@ -80,21 +80,29 @@ export interface ScannableScan {
   scannedBytes: number;
 }
 
-const scannableFileCache = new WeakMap<ParsedSkill, Promise<ScannableScan>>();
+const scannableScanCache = new WeakMap<ParsedSkill, Promise<ScannableScan>>();
+const scannableFilesCache = new WeakMap<ParsedSkill, Promise<ScannableFile[]>>();
 
 export function readScannableScan(skill: ParsedSkill): Promise<ScannableScan> {
-  const cached = scannableFileCache.get(skill);
+  const cached = scannableScanCache.get(skill);
   if (cached) {
     return cached;
   }
 
   const pending = loadScannableFiles(skill);
-  scannableFileCache.set(skill, pending);
+  scannableScanCache.set(skill, pending);
   return pending;
 }
 
-export async function readScannableFiles(skill: ParsedSkill): Promise<ScannableFile[]> {
-  return (await readScannableScan(skill)).files;
+export function readScannableFiles(skill: ParsedSkill): Promise<ScannableFile[]> {
+  const cached = scannableFilesCache.get(skill);
+  if (cached) {
+    return cached;
+  }
+
+  const pending = readScannableScan(skill).then((scan) => scan.files);
+  scannableFilesCache.set(skill, pending);
+  return pending;
 }
 
 async function loadScannableFiles(skill: ParsedSkill): Promise<ScannableScan> {
